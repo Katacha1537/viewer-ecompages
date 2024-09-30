@@ -95,7 +95,7 @@ const usePageSearch = (domainPage: string, pathName: string, slug: string | null
                     setError('Domínio não encontrado.');
                 }
             } catch (err: any) {
-                console.error('Erro ao buscar dados do domínio:', err.message || err);
+                console.error('Erro ao buscar dados do domínio', err.message || err);
                 setError('Erro ao buscar dados do domínio: ' + err.message);
             } finally {
                 setLoading(false);
