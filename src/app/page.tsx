@@ -4,10 +4,18 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
-  const [domainOrigin, setDomainOrigin] = useState("")
-  const pathname = usePathname()
-  const { content, loading, error } = usePageSearch(new URL(window.location.href).hostname, pathname, null)
+  const [hostName, setHostName] = useState<string>(""); // novo estado para armazenar o hostName
+  const pathname = usePathname();
+  const { content, loading, error } = usePageSearch(hostName, pathname, null);
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Garante que o código que usa window só execute no cliente
+    if (typeof window !== "undefined") {
+      const currentHostName = new URL(window.location.href).hostname;
+      setHostName(currentHostName); // Define o hostName no estado
+    }
+  }, []); // Executa uma vez no carregamento inicial
 
   useEffect(() => {
     // Atualiza o innerHTML do canvasRef quando o conteúdo muda
@@ -15,13 +23,8 @@ export default function Home() {
       canvasRef.current.innerHTML = content;
     }
 
-    console.log(content)
-
-    // Pega o domínio atual sem o protocolo
-    const url = new URL(window.location.href);
-    const domain = url.hostname; // Apenas o domínio (sem https:// ou http://)
-    setDomainOrigin(domain);
-  }, [content, domainOrigin]); // Dependências atualizadas
+    console.log(content);
+  }, [content]); // Dependência do conteúdo
 
   if (loading) return <div>CARREGANDO...</div>;
 
