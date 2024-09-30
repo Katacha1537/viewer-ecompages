@@ -25,7 +25,7 @@ const usePageSearch = (domainPage: string, pathName: string, slug: string | null
         const fetchDomainData = async () => {
             try {
                 // Verifica se estamos em ambiente local ou em um domínio específico
-                if (domainPage === 'localhost' || domainPage === 'viewer-ecompages.vercel.app') {
+                if (domainPage === 'localhost' || domainPage === 'viewer-ecompages.vercel.app' || domainPage === 'page.ecompages.io') {
                     // Consulta a página pelo slug
                     const pageQuery = query(
                         collection(db, 'paginas'),
