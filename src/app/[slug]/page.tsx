@@ -21,12 +21,59 @@ export default function Page({ params }: { params: { slug: string } }) {
         // Atualiza o innerHTML do canvasRef quando o conteúdo muda
         if (canvasRef.current && content) {
             canvasRef.current.innerHTML = content;
+
+            // Define todas as respostas como 'display: none'
+            const answers = canvasRef.current.querySelectorAll('.faq1-answer') as NodeListOf<HTMLElement>;
+            answers.forEach(answer => {
+                answer.style.display = 'none';
+            });
+
+            // Script para alternar visibilidade das respostas
+            const toggleButtons = canvasRef.current.querySelectorAll('.faq1-toggle-btn') as NodeListOf<HTMLButtonElement>;
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const answer = button.closest('.faq1-card')?.querySelector('.faq1-answer') as HTMLElement;
+                    if (answer) {
+                        answer.style.display = answer.style.display === "none" || answer.style.display === "" ? "block" : "none";
+                        button.textContent = answer.style.display === "block" ? "-" : "+"; // Troca o sinal
+                    }
+                });
+            });
+
+            // Lógica do cronômetro
+            const cronoElement = canvasRef.current.querySelector('#hero4-crono') as HTMLElement;
+            if (cronoElement) {
+                let hours = parseInt(cronoElement.children[0].children[0].textContent || "0");
+                let minutes = parseInt(cronoElement.children[1].children[0].textContent || "0");
+                let seconds = parseInt(cronoElement.children[2].children[0].textContent || "0");
+
+                let totalTimeInSeconds = hours * 3600 + minutes * 60 + seconds;
+
+                const interval = setInterval(() => {
+                    hours = Math.floor(totalTimeInSeconds / 3600);
+                    minutes = Math.floor((totalTimeInSeconds % 3600) / 60);
+                    seconds = totalTimeInSeconds % 60;
+
+                    cronoElement.children[0].children[0].textContent = String(hours).padStart(2, '0');
+                    cronoElement.children[1].children[0].textContent = String(minutes).padStart(2, '0');
+                    cronoElement.children[2].children[0].textContent = String(seconds).padStart(2, '0');
+
+                    if (totalTimeInSeconds <= 0) {
+                        clearInterval(interval);
+                    } else {
+                        totalTimeInSeconds--;
+                    }
+                }, 1000);
+            }
         }
 
-        console.log(content);
     }, [content]); // Dependência do conteúdo
 
-    if (loading) return <div>CARREGANDO...</div>;
+    if (loading) {
+        return (
+            <div className="flex h-screen justify-center items-center">Carregando...</div>
+        );
+    }
 
     if (error) {
         return (
@@ -41,12 +88,6 @@ export default function Page({ params }: { params: { slug: string } }) {
         <div
             id="editor"
             ref={canvasRef}
-            style={{
-                margin: '0px',
-                maxWidth: '100%',
-                minHeight: '1024px', // substitui tailwind
-                outline: 'none', // previne o foco
-            }}
         />
     );
 }
